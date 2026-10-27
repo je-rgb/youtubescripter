@@ -1,8 +1,8 @@
 # 🎬 YouTube Scripter (유튜브 자막/대본 추출기)
 
-유튜브 영상 URL을 입력받아 한국어 및 다국어 자막을 추출하고, 텍스트 파일로 저장할 수 있는 파이썬 & Streamlit 웹 서비스입니다.
-https://youtubescripter-gsm7kqm54bhksssxjusc8m.streamlit.app/
-(배포완료)
+유튜브 영상 URL을 입력받아 한국어 및 다국어 자막을 추출하고, 텍스트 파일로 저장할 수 있는 파이썬 & Streamlit 웹 서비스입니다.  
+https://youtubescripter-gsm7kqm54bhksssxjusc8m.streamlit.app/  
+(배포완료)  
 ---
 
 ## ✨ 주요 기능
