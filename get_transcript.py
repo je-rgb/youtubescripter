@@ -6,6 +6,7 @@ from youtube_transcript_api import (
     NoTranscriptFound,
     IpBlocked,
 )
+from analyzer import extract_hashtags, summarize_text
 
 
 def extract_video_id(url_or_id: str) -> str:
@@ -84,16 +85,33 @@ def main():
     if not transcript:
         return
 
-    # 2. 콘솔 출력 (상위 10개 미리보기)
-    print(f"\n 총 {len(transcript)}개의 자막 문장을 가져왔습니다.\n")
-    print("--- [미리보기 (처음 10문장)] ---")
-    for item in transcript[:10]:
-        time_str = format_timestamp(item["start"])
-        print(f"[{time_str}] {item['text']}")
+    # 2. 전체 대본 텍스트 생성
+    full_text = " ".join(item["text"] for item in transcript)
 
-    # 3. 텍스트 파일로 저장
+    # 3. 해시태그 및 3줄 요약 추출
+    hashtags = extract_hashtags(full_text, top_n=5)
+    summary_lines = summarize_text(full_text, num_lines=3)
+
+    print("\n" + "=" * 60)
+    print("🏷️ 주요 키워드 해시태그")
+    print(" ".join(hashtags))
+    print("-" * 60)
+    print(f"📝 핵심 내용 요약 ({len(summary_lines)}줄)")
+    for idx, s in enumerate(summary_lines, 1):
+        print(f"{idx}. {s}")
+    print("=" * 60)
+
+    # 4. 텍스트 파일로 저장
     output_filename = f"transcript_{video_id}.txt"
     with open(output_filename, "w", encoding="utf-8") as f:
+        # 핵심 요약 및 해시태그
+        f.write("=== 핵심 요약 및 주요 해시태그 ===\n\n")
+        f.write("[해시태그]\n" + " ".join(hashtags) + "\n\n")
+        f.write(f"[{len(summary_lines)}줄 요약]\n")
+        for idx, s in enumerate(summary_lines, 1):
+            f.write(f"{idx}. {s}\n")
+        f.write("\n" + "=" * 50 + "\n\n")
+
         # 타임스탬프 포함 버전
         f.write("=== 타임스탬프 포함 자막 ===\n\n")
         for item in transcript:
@@ -101,10 +119,9 @@ def main():
             f.write(f"[{time_str}] {item['text']}\n")
 
         f.write("\n\n=== 전체 대본 (텍스트만) ===\n\n")
-        full_text = " ".join(item["text"] for item in transcript)
         f.write(full_text)
 
-    print(f"\n 파일이 성공적으로 저장되었습니다: {output_filename}")
+    print(f"\n📁 요약 및 스크립트 파일이 저장되었습니다: {output_filename}")
 
 
 if __name__ == "__main__":
